@@ -64,7 +64,8 @@ export default {
             localStorage.setItem('user_id', res.body.user._id)
 
             console.log('yay got ' + JSON.stringify(localStorage.user_id) + ' ' + JSON.stringify(localStorage.id_token));
-            router.push('/list')
+            localStorage.removeItem("localStorage.logged_out");
+            router.push('/list');
 
           }
         });

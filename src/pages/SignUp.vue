@@ -10,9 +10,9 @@
 
           <b-form-input placeholder="First and Last Name" id="user" type="text" v-model="fieldData.user" required class="formField">
           </b-form-input>
-          <b-form-input placeholder="Email" id="email" type="text" v-model="fieldData.email" required class="formField">
+          <b-form-input placeholder="Email" id="email" type="email" v-model="fieldData.email" required class="formField">
           </b-form-input>
-          <b-form-input placeholder="Password" id="password" type="text" v-model="fieldData.password" required class="formField">
+          <b-form-input placeholder="Password" id="password" type="password" v-model="fieldData.password" required class="formField">
           </b-form-input>
 
         </b-form-group>
@@ -65,7 +65,7 @@ export default {
         .end((entry, err, res) => {
           console.log('entry: ', entry, 'err: ', err, 'res: ', res)
         });
-        router.push('/create')
+        router.push('/login')
 
     },
     Loggit() {

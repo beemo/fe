@@ -25,7 +25,9 @@ export default {
     localStorage.removeItem("user_id");
     localStorage.removeItem("id_token");
     localStorage.removeItem("put_id");
-    // this.$set('noAuth', true)
+    localStorage.removeItem("put_index");
+    localStorage.setItem("logged_out");
+    router.push('/home')
   }
 }
 </script>

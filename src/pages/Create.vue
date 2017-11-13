@@ -58,6 +58,7 @@
 
         <h5 class="slideup">File Upload</h5>
         <b-form-group class="formsections" id="upload" label-for="upload">Selected file: {{uploadImage && uploadImage.name}}
+          <!-- @click.native="bindImage()" -->
           <b-form-file id="file_input" name="bbqpic" v-model="uploadImage" accept="image/*"></b-form-file>
           <b-button @click="clearFile">Reset</b-button>
         </b-form-group>
@@ -76,6 +77,7 @@
 
 <script>
 import request from 'superagent';
+import axios from 'axios';
 import auto from 'run-auto';
 import router from '../router';
 
@@ -95,7 +97,7 @@ export default {
       },
       entryId: '',
       entrySuccessful: null,
-      uploadImage: null
+      uploadImage: '',
     }
   },
   computed: {
@@ -164,7 +166,7 @@ export default {
     },
     postImage(_id, image) {
       var self = this;
-        request
+      request
         .post('http://localhost:3000/api/image')
         .attach('file', image)
         .field('user_id', localStorage.user_id)

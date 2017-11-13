@@ -78,6 +78,10 @@ export default {
   },
   mounted() {
     this.getEssentials();
+    if ( localStorage.put_id ) {
+      this.populatePut(localStorage.put_id)
+      localStorage.removeItem("put_id");
+    }
   },
   computed: {
     authorized() {
@@ -143,8 +147,35 @@ export default {
     },
     getMore(entry, index) {
       var self = this
-      // var id = self.items[index]._id
-      var id = entry._id
+      var id = self.items[index]._id
+
+
+      axios.get('http://127.0.0.1:3000/api/entries/' + id)
+        .then(function(response) {
+          self.singleEntry = response.data
+          console.log('res:', response.data)
+          self.cookDate = moment(response.data.created).format('l')
+          localStorage.removeItem("put_id");
+          return
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+
+    //   if ( self.singleEntry[photo] ) {
+    //   axios.get('http://127.0.0.1:3000/api/image/' + id)
+    //     .then(function(response) {
+    //       self.imageSrc = response.data.vuePath
+    //       return
+    //     })
+    //     .catch(function(error) {
+    //       console.log(error);
+    //     });
+    // }
+  },
+    populatePut(entry) {
+      var self = this
+      var id = entry
       axios.get('http://127.0.0.1:3000/api/entries/' + id)
         .then(function(response) {
           self.singleEntry = response.data
@@ -157,7 +188,6 @@ export default {
 
       axios.get('http://127.0.0.1:3000/api/image/' + id)
         .then(function(response) {
-          console.log(response)
           self.imageSrc = response.data.vuePath
           return
         })
@@ -170,7 +200,8 @@ export default {
       localStorage.put_id = this.items[index]._id
       router.push('/edit')
     },
-    EditButton(record) {
+    EditButton(record, index) {
+      console.log(record, index)
       var self = this
       localStorage.put_id = record
       router.push('/edit')

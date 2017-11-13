@@ -24,7 +24,6 @@ export default {
     }
   },
   mounted() {
-    this.getEntries();
     console.log(localStorage)
 
     // localStorage.setItem('')

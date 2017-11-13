@@ -1,33 +1,14 @@
 <template>
 <div id="app">
-  <h3 v-if="!putSuccessful">{{ page }}</h3>
-  <div class="fortypercent" v-if="authorized">
-    <h5 v-if="putSuccessful">BBQ Journal Entry Edited Successfully.</h5>
-    <b-button v-if="sendBack" class="lighted" variant="primary" v-on:click="redirectList()">Back</b-button>
-
-    <div v-if="!putSuccessful">
-
+  <h3 v-show="!putSuccessful">{{ page }}</h3>
+  <div class="fortypercent" v-show="authorized">
+    <h5 v-show="putSuccessful">BBQ Journal Entry Edited Successfully.</h5>
+    <b-button v-show="putSuccessful" class="lighted" variant="primary" v-on:click="redirectList()">Back</b-button>
+    <div v-show="!putSuccessful">
       <b-form @submit="putEntry()">
-
-        <!-- <b-form-group class="formsections" id="titleOnly" label-for="entryTitle">
-          <b-form-input placeholder="Entry Title" id="title" type="text" v-model="fieldData.title" required class="formField">
-          </b-form-input> -->
-        <!-- </b-form-group> -->
         <b-form-group label="Entry title:">
           <b-form-input id="title" type="text" v-model="fieldData.title" class="formField" required></b-form-input>
         </b-form-group>
-        <!--
-        <h5 class="slideup">Ingredients</h5>
-        <b-form-group class="formsections" id="ingredients" placeholder="Ingredients" label-for="ingredients">
-
-          <b-form-input id="meat" placeholder="Meat" type="text" v-model="fieldData.ingredients.meat" required class="formField"></b-form-input>
-          <b-form-input id="marinade" placeholder="Marinade" type="text" v-model="fieldData.ingredients.marinade" class="formField"></b-form-input>
-          <span class="field-desc"><b>Injection Used: </b></span>
-          <b-form-input id="injection" placeholder="Injection" type="text" v-model="fieldData.ingredients.injection" class="formField"></b-form-input>
-          <b-form-input id="rub" placeholder="Rub" type="text" v-model="fieldData.ingredients.rub" class="formField"></b-form-input>
-          <b-form-input id="sauce" placeholder="Sauce" type="text" v-model="fieldData.ingredients.sauce" class="formField"></b-form-input>
-        </b-form-group> -->
-
         <h5 class="slideup">Ingredients</h5>
         <div class="form-section">
           <b-form-group label="Meat:">
@@ -60,8 +41,6 @@
             <b-form-input type="text" id="woodtype" v-model="fieldData.cook.woodtype"></b-form-input>
           </b-form-group>
           <b-form-group class="slideupsixpx" label="How long was your cook?">
-
-            <!-- <p class="slideupsixpx">How long was your cook?</p> -->
             <br>
             <div>
               <p class="slideupsixpx"> Hours&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Minutes</p>
@@ -83,7 +62,6 @@
               <b-form-checkbox id="pellets" v-model="fieldData.cook.pellets">
               </b-form-checkbox>
             </b-form-group>
-
 
             <b-form-group label="Did you use Charcoal?">
               <b-form-checkbox id="charcoal" v-model="fieldData.cook.charcoal">
@@ -110,9 +88,22 @@
           </b-form-group>
 
         </div>
+        <br>
+        <div v-if="photoRemoved"><a>Your photo has been removed from this entry.</a></div>
+        <div v-else>
+          <b-form-group class="form-section" id="upload" label-for="upload">
+            <h5 class="slideup">Photo Upload</h5><b>Select a different file: {{newImage && newImage.name}}</b>
 
-        <b-button class="lighted" type="submit" variant="primary">Update</b-button>
-        <b-button class="lighted" type="reset" variant="secondary">Reset</b-button>
+            <b-form-file id="file" placeholder="Click here to change photo" name="bbqpic" v-model="newImage" accept="image/*"></b-form-file>
+
+            <b-button @click="deleteButtonCounter += 1" class="lighted" variant="danger">{{deleteButtonText}}</b-button>
+          </b-form-group>
+        </div>
+        <br>
+
+        <b-button @click="redirectList()" class="lighted" type="submit" variant="success">Back to Entries</b-button>
+        <b-button class="lighted" type="submit" variant="primary">Update Entry</b-button>
+        <b-button class="lighted" type="reset" variant="secondary">Reset Form</b-button>
       </b-form>
       <br>
     </div>
@@ -143,10 +134,17 @@ export default {
         },
         results: {}
       },
+      textPutSuccessful: false,
+      imagePutSuccessful: false,
       putSuccessful: false,
       currentEntry: {},
-      sendBack: false
-
+      sendBack: false,
+      newImage: null,
+      photoRemoved: false,
+      photoAdded: false,
+      deleteButtonCounter: 0,
+      deleteButtonText: "Delete photo?",
+      imagelessEntry: false
     }
   },
   mounted() {
@@ -160,7 +158,6 @@ export default {
       var self = this
       if (!localStorage.put_id) {
         router.push('/list')
-
       }
       self.populateForm();
     }
@@ -175,8 +172,10 @@ export default {
           return response.data
         })
         .then(function(response) {
-          console.log('jergins:', response)
           self.fieldData = response
+          if (!response.photo) {
+            self.imagelessEntry = true
+          }
         })
         .catch(function(error) {
           console.log(error);
@@ -226,14 +225,84 @@ export default {
           if (res.status != '200') {
             return (err)
           }
-          self.putSuccessful = true
-          self.sendBack = true
-        });
+          console.log('TEXT: PUT SUCCESS - ', res)
+          if (self.imagelessEntry && self.newImage) {
+            self.postImage(res.body._id, self.newImage)
+          }
+          else if (!self.imagelessEntry && self.newImage) {
+            self.putImage(res.body._id, self.newImage)
+          }
+          else {
+            self.$set(self, 'putSuccessful', true)
+            return
+          }
+          console.log(res.body)
+        })
+    },
+    postImage(_id, image) {
+      var self = this;
+      request
+        .post('http://localhost:3000/api/image/' + _id)
+        .attach('file', newImage)
+        .field('user_id', localStorage.user_id)
+        .field('entryId', _id)
+        .end((err, res) => {
+          if (err) {
+            console.error('IMAGE: POST FAIL - ', err)
+            return err
+          }
+          if (res.status == '201') {
+            console.log('IMAGE: POST SUCCESS - ', res)
+            self.$set(self, 'photoAdded', true)
+            self.$set(self, 'sendBack', true)
+            localStorage.setItem('put_id', _id);
+          }
+        })
     },
     redirectList() {
-      localStorage.put_id = ''
       router.push('/list')
     },
+    deletePhoto() {
+      var self = this
+
+      if (deleteButtonCounter == 1) {
+        self.deleteButtonText = "Are you sure?"
+      }
+      if (deleteButtonCounter == 2) {
+        request
+          .delete('http://localhost:3000/api/image/' + localStorage.put_id)
+          .field('user_id', localStorage.user_id)
+          .field('entryId', localStorage.put_id)
+          .end((err, res) => {
+            if (err) {
+              console.error('IMAGE: PUT FAIL - ', err)
+              return err
+            }
+            self.deleteButtonText = "Deleted"
+          })
+      }
+      if (deleteButtonCounter > 2) {
+        self.deleteButtonText = "Deleted"
+      }
+    },
+    postImage(_id, image) {
+      var self = this;
+      request
+        .post('http://localhost:3000/api/image')
+        .attach('file', image)
+        .field('user_id', localStorage.user_id)
+        .field('entryId', _id)
+        .end((err, res) => {
+          if (err) {
+            console.error('IMAGE: FAIL - ', err)
+            return err
+          }
+          if (res.status == '200') {
+            console.log('IMAGE: SUCCESS - ', res)
+            self.newImage = true
+          }
+        })
+    }
   }
 }
 </script>
