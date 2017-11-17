@@ -1,5 +1,9 @@
 <template>
 <div id="app">
+  <div v-if="deleteOK">
+    <br>
+    <h3>Your previous entry was successfully deleted.</h3>
+  </div>
   <div v-if="singleEntry">
     <hr>
     <b-container fluid class="resultsbox">
@@ -45,10 +49,14 @@
     </div>
 
   </div>
-  <div class="seventypercent box-entry" v-if="authorized">
+  <div class="seventypercent box-entry" v-show="authorized && hasEntries">
     <h4 class="entriesoffset bordermargin shadowed-noblur">Entries List</h4>
     <b-table class="table-class" small hover :items="items" :fields="['title', 'rating', 'date']" @row-clicked="getMore" @row-dblclicked="EditEntry"></b-table>
     <br>
+  </div>
+  <div v-show="!hasEntries" class="seventypercent box-entry">
+    <h4 class="entriesoffset bordermargin shadowed-noblur">You have no entries yet.</h4>
+    <b-button @click="redirectCreate()" class="lighted" type="submit" variant="success">Make one.</b-button><br><br>
   </div>
 </div>
 </template>
@@ -73,19 +81,31 @@ export default {
       singleEntry: null,
       items: [],
       cookDate: '',
-      imageSrc: ''
+      imageSrc: '',
+      photo_id: '',
+      deleteOK: false
     }
   },
   mounted() {
     this.getEssentials();
-    if ( localStorage.put_id ) {
+    if (localStorage.deleteOK) {
+      this.deleteOK = true
+    };
+    if (localStorage.put_id) {
       this.populatePut(localStorage.put_id)
-      localStorage.removeItem("put_id");
+      localStorage.removeItem("put_id")
+    };
+    if (!localStorage.id_token) {
+      router.push('/login')
     }
   },
   computed: {
     authorized() {
       return localStorage.user_id || localStorage.id_token
+    },
+    hasEntries() {
+      var self = this
+      return self.items[0]
     }
   },
   methods: {
@@ -123,7 +143,6 @@ export default {
           var garbage = _.remove(validEntryArray, function(n) {
             return !(n.created) || !(n.title) || !(n.results.overall)
           });
-          console.log('rrrrr:', validEntryArray)
           validEntryArray = _.forEach(validEntryArray, function(object) {
             object.rating = object.results.overall
           })
@@ -139,7 +158,6 @@ export default {
         })
         .then(function(response) {
           self.items = _.clone(response)
-          console.log('self.items: ', self.items)
         })
         .catch(function(error) {
           console.log(error);
@@ -148,12 +166,16 @@ export default {
     getMore(entry, index) {
       var self = this
       var id = self.items[index]._id
-
-
+      self.imageSrc = ''
+      localStorage.removeItem("deleteOK");
+      self.deleteOK = false;
       axios.get('http://127.0.0.1:3000/api/entries/' + id)
         .then(function(response) {
+          console.log(response)
           self.singleEntry = response.data
-          console.log('res:', response.data)
+          if (response.data.photo) {
+            self.imageSrc = self.singleEntry.photo.vuePath
+          }
           self.cookDate = moment(response.data.created).format('l')
           localStorage.removeItem("put_id");
           return
@@ -161,40 +183,20 @@ export default {
         .catch(function(error) {
           console.log(error);
         });
-
-    //   if ( self.singleEntry[photo] ) {
-    //   axios.get('http://127.0.0.1:3000/api/image/' + id)
+    },
+    // populatePut(entry) {
+    //   var self = this
+    //   var id = entry
+    //   axios.get('http://127.0.0.1:3000/api/entries/' + id)
     //     .then(function(response) {
-    //       self.imageSrc = response.data.vuePath
+    //       self.singleEntry = response.data
+    //       self.cookDate = moment(response.data.created).format('l')
     //       return
     //     })
     //     .catch(function(error) {
     //       console.log(error);
     //     });
-    // }
-  },
-    populatePut(entry) {
-      var self = this
-      var id = entry
-      axios.get('http://127.0.0.1:3000/api/entries/' + id)
-        .then(function(response) {
-          self.singleEntry = response.data
-          self.cookDate = moment(response.data.created).format('l')
-          return
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-
-      axios.get('http://127.0.0.1:3000/api/image/' + id)
-        .then(function(response) {
-          self.imageSrc = response.data.vuePath
-          return
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-    },
+    // },
     EditEntry(record, index) {
       var self = this
       localStorage.put_id = this.items[index]._id
@@ -206,29 +208,20 @@ export default {
       localStorage.put_id = record
       router.push('/edit')
     },
-    getImage(id) {
-      var self = this;
-      var id = self.singleEntry._id
-      axios.get('http://127.0.0.1:3000/api/images/' + id)
-        .then(function(response) {
-          console.log(response)
-          // return resonse.image.vuePath
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
-    }
+    redirectCreate() {
+      router.push('/create')
+    },
   }
 }
 </script>
 
-<style>
+<style scoped>
 .image {
-  margin: 20px;
+  margin: 15px;
   border: lightgrey solid 2px;
-  padding: 35px;
-  max-width: 50%;
-  max-height: 50%;
+  padding: 25px;
+  max-width: 45%;
+  max-height: 45%;
 }
 
 

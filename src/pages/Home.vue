@@ -1,5 +1,9 @@
 <template>
 <div id="home">
+  <div v-if="localStorage.logged_out">
+    <br>
+    <h3>You have been logged out successfully.</h3>
+  </div>
   <h3>Most Popular Meats</h3>
   <CommitChart class="fortypercent">  <h4>Most Popular Meats</h4></CommitChart>
   <br>
@@ -22,11 +26,6 @@ export default {
       singleEntry: '',
       pleaseLogin: false
     }
-  },
-  mounted() {
-    console.log(localStorage)
-
-    // localStorage.setItem('')
   },
   computed: {
     authorized() {
@@ -62,7 +61,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /*#app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

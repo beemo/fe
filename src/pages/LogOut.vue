@@ -27,12 +27,12 @@ export default {
     localStorage.removeItem("put_id");
     localStorage.removeItem("put_index");
     localStorage.setItem("logged_out");
-    router.push('/home')
+    router.push('/')
   }
 }
 </script>
 
-<style>
+<style scoped>
 /*#app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

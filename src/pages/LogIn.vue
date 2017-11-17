@@ -15,6 +15,7 @@
           </b-form-input>
 
         </b-form-group>
+        <b-button @click="redirectSignup()" class="lighted" type="submit" variant="success">Signup</b-button><br><br>
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="secondary">Reset</b-button>
       </b-form>
@@ -74,7 +75,10 @@ export default {
     Loggit() {
       var self = this
       console.log(self)
-    }
+    },
+    redirectSignup() {
+  router.push('/signup')
+},
   }
   // axios({
   //     method: 'post',
@@ -99,7 +103,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .fortypercent {
   width: 40%;

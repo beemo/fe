@@ -9,11 +9,6 @@
 import router from './router'
 export default {
   name: 'app',
-  mounted() {
-    if (!localStorage.id_token) {
-      router.push('/login')
-    }
-  }
 }
 </script>
 

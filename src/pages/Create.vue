@@ -96,8 +96,16 @@ export default {
         results: {}
       },
       entryId: '',
+      imagePostSuccessful: null,
+      textPostSuccessful: null,
       entrySuccessful: null,
       uploadImage: '',
+      photo_id: ''
+    }
+  },
+  mounted() {
+    if (!localStorage.id_token) {
+      router.push('/login')
     }
   },
   computed: {
@@ -113,74 +121,89 @@ export default {
     postEntry() {
       event.preventDefault()
       var self = this;
-      var entry = {
-        'title': self.fieldData.entryTitle,
-        'user': localStorage.user_id,
-        'results': {
-          'flavor': self.fieldData.results.flavor,
-          'texture': self.fieldData.results.texture,
-          'appearance': self.fieldData.results.appearance,
-          'overall': self.fieldData.results.overall
-        },
-        'cook': {
-          'smokerModel': self.fieldData.cook.smokerModel,
-          'temp': self.fieldData.cook.temp,
-          'woodType': self.fieldData.cook.woodType,
-          'electricHeatingElement': self.fieldData.cook.electricHeatingElement,
-          'pellets': self.fieldData.cook.pellets,
-          'charcoal': self.fieldData.cook.charcoal,
-          'cookTime': {
-            'hours': self.fieldData.cook.cookTime.hours,
-            'mins': self.fieldData.cook.cookTime.mins
+      auto({
+        postImage: function(callback) {
+          if (self.uploadImage) {
+            request
+              .post('http://localhost:3000/api/image')
+              .attach('file', self.uploadImage)
+              .field('user', localStorage.user_id)
+              .end((err, res) => {
+                if (err) {
+                  console.error('IMAGE: FAIL - ', err)
+                  return err
+                }
+                if (res.status == '201') {
+                  console.log('res.body._id', res.body._id)
+                  console.log('IMAGE: SUCCESS - ', res)
+                  self.imagePostSuccessful = true
+                  self.$set(self, 'photo_id', res.body._id)
+                  console.log('self photo', self.photo_id)
+                }
+              })
           }
+          callback(null, {
+            photo: self.photo_id
+          })
         },
-        'ingredients': {
-          'meat': self.fieldData.ingredients.meat,
-          'marinade': self.fieldData.ingredients.marinade,
-          'injection': self.fieldData.ingredients.injection,
-          'slather': self.fieldData.ingredients.slather,
-          'rub': self.fieldData.ingredients.rub,
-          'sauce': self.fieldData.ingredients.sauce
-        }
-      }
-
-      request
-        .post('http://127.0.0.1:3000/api/entries')
-        .send(entry)
-        .set('Accept', 'application/json')
-        .end((err, res) => {
-          if (err) {
-            console.error('ENTRIES: FAIL - ', err)
-            return err
-          }
-          if (res.status == '201') {
-            console.log('ENTRIES: SUCCESS - ', res)
-            // self.entryId = res.body._id
-            if (!self.uploadImage) {
-              self.$set(self, 'entrySuccessful', true)
-              return
+        createEntryObj: ['postImage', function(results, callback) {
+          console.log('results:', results)
+          var entry = {
+            'title': self.fieldData.entryTitle,
+            'user': localStorage.user_id,
+            'photo': self.photo_id || null,
+            'results': {
+              'flavor': self.fieldData.results.flavor,
+              'texture': self.fieldData.results.texture,
+              'appearance': self.fieldData.results.appearance,
+              'overall': self.fieldData.results.overall
+            },
+            'cook': {
+              'smokerModel': self.fieldData.cook.smokerModel,
+              'temp': self.fieldData.cook.temp,
+              'woodType': self.fieldData.cook.woodType,
+              'electricHeatingElement': self.fieldData.cook.electricHeatingElement,
+              'pellets': self.fieldData.cook.pellets,
+              'charcoal': self.fieldData.cook.charcoal,
+              'cookTime': {
+                'hours': self.fieldData.cook.cookTime.hours,
+                'mins': self.fieldData.cook.cookTime.mins
+              }
+            },
+            'ingredients': {
+              'meat': self.fieldData.ingredients.meat,
+              'marinade': self.fieldData.ingredients.marinade,
+              'injection': self.fieldData.ingredients.injection,
+              'slather': self.fieldData.ingredients.slather,
+              'rub': self.fieldData.ingredients.rub,
+              'sauce': self.fieldData.ingredients.sauce
             }
-            self.postImage(res.body._id, self.uploadImage)
           }
-        })
-    },
-    postImage(_id, image) {
-      var self = this;
-      request
-        .post('http://localhost:3000/api/image')
-        .attach('file', image)
-        .field('user_id', localStorage.user_id)
-        .field('entryId', _id)
-        .end((err, res) => {
-          if (err) {
-            console.error('IMAGE: FAIL - ', err)
-            return err
-          }
-          if (res.status == '201') {
-            console.log('IMAGE: SUCCESS - ', res)
-            self.entrySuccessful = true
-          }
-        })
+          var _entry = Object.assign({}, entry, results.postImage);
+          console.log('entry:', _entry)
+          callback(null, _entry)
+        }],
+        postText: ['createEntryObj', 'postImage', function(results, callback) {
+          request
+            .post('http://127.0.0.1:3000/api/entries')
+            .send(results.createEntryObj)
+            .set('Accept', 'application/json')
+            .end((err, res) => {
+              if (err) {
+                console.error('ENTRIES: FAIL - ', err)
+                return err
+              }
+              if (res.status == '201') {
+                console.log('ENTRIES: SUCCESS - ', res)
+              }
+            })
+          callback(null, true)
+        }]
+      }, function(err, results) {
+        self.entrySuccessful = true,
+          console.log('err = ', err)
+        console.log('results = ', results)
+      })
     },
     Again() {
       var self = this
@@ -199,7 +222,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /*#app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -60,12 +60,18 @@ export default {
       };
       console.log('entry: ', entry)
       request
-        .post('http://127.0.0.1:3000/api/login')
+        .post('http://127.0.0.1:3000/api/signup')
         .send(entry)
         .end((entry, err, res) => {
+          localStorage.setItem('id_token', res.body.token)
+          localStorage.setItem('user_id', res.body.user._id)
+
+          console.log('yay got ' + JSON.stringify(localStorage.user_id) + ' ' + JSON.stringify(localStorage.id_token));
+          localStorage.removeItem("localStorage.logged_out");
+
           console.log('entry: ', entry, 'err: ', err, 'res: ', res)
         });
-        router.push('/login')
+        router.push('/list')
 
     },
     Loggit() {
@@ -96,7 +102,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /*#app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
