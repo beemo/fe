@@ -22,12 +22,16 @@ export default {
     }
   },
   mounted() {
-    localStorage.removeItem("user_id");
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("put_id");
-    localStorage.removeItem("put_index");
-    localStorage.setItem("logged_out");
-    router.push('/')
+    if (!localStorage.user_id) {
+      router.push('/login')
+    } else {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("id_token");
+      localStorage.removeItem("put_id");
+      localStorage.removeItem("put_index");
+      localStorage.setItem("logged_out", true);
+      router.push('/')
+    }
   }
 }
 </script>

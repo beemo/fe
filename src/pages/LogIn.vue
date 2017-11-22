@@ -15,9 +15,10 @@
           </b-form-input>
 
         </b-form-group>
-        <b-button @click="redirectSignup()" class="lighted" type="submit" variant="success">Signup</b-button><br><br>
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="secondary">Reset</b-button>
+        <b-button @click="redirectSignup()" class="lighted" type="submit" variant="success">Signup</b-button><br><br>
+
       </b-form>
       <br>
   </div>
@@ -43,6 +44,16 @@ export default {
       authFail: false
     }
   },
+  mounted() {
+    if (localStorage.user_id || localStorage.id_token) {
+      router.push('/list')
+    }
+  },
+  computed: {
+    authorized() {
+      return localStorage.user_id || localStorage.id_token
+    }
+  },
   methods: {
     postLogin() {
       event.preventDefault()
@@ -66,6 +77,7 @@ export default {
 
             console.log('yay got ' + JSON.stringify(localStorage.user_id) + ' ' + JSON.stringify(localStorage.id_token));
             localStorage.removeItem("localStorage.logged_out");
+            self.$forceUpdate();
             router.push('/list');
 
           }

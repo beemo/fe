@@ -6,9 +6,13 @@
 </template>
 
 <script>
+import Nav from './components/Nav.vue'
 import router from './router'
 export default {
   name: 'app',
+  components: {
+    'bbqnav': Nav
+  },
 }
 </script>
 

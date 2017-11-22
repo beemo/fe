@@ -2,13 +2,14 @@
 <div id="app">
   <b-navbar class="navtop" toggleable="md" type="light" variant="info">
     <b-nav-toggle target="nav_collapse"></b-nav-toggle>
-    <b-navbar-brand href="/">{{ title }}</b-navbar-brand left>
+    <b-navbar-brand href="/">
+      <img src="/static/logo.png" class="d-inline-block align-top" alt="BV"> BBQ Journal
+    </b-navbar-brand>
     <b-nav is-nav-bar class="ml-auto">
-      <b-nav-item-dropdown text="Links" color="orange" right>
+      <b-nav-item-dropdown v-cloak text="Links" color="orange" right>
         <b-dropdown-item href="/#/create">Create</b-dropdown-item>
         <b-dropdown-item href="/#/list">Entries</b-dropdown-item>
-        <b-dropdown-item v-show="noAuth" href="/#/login">Login</b-dropdown-item>
-        <b-dropdown-item v-show="!noAuth" href="/#/logout">Logout</b-dropdown-item>
+        <b-dropdown-item href="/#/logout">{{ loginMsg }}</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-nav>
   </b-navbar>
@@ -17,20 +18,19 @@
 
 <script>
 import BootstrapVue from 'bootstrap-vue'
-
 export default {
   name: 'nav',
-  data() {
-    return {
-      title: 'BBQ Journal',
-      noAuth: true
-    }
-  },
-  mounted() {
-    self = this
-      if (localStorage.user_id) {
-        self.noAuth = false
+  computed: {
+    loginMsg: {
+      cache: false,
+      get: function() {
+        if (localStorage.user_id) {
+          return 'Logout'
+        } else if (!localStorage.user_id || localStorage.logged_out) {
+          return 'Login'
+        }
       }
+    }
   }
 }
 </script>

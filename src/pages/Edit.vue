@@ -87,7 +87,7 @@
       </div>
       <br>
 
-      <div class="form-section">
+      <div v-show="!photoRemoved" class="form-section">
         <div v-show="imageSrc" class="container">
           <img :src="imageSrc" class="image thumb">
           <b-button @click="deletePhoto" class="lighted" variant="danger">{{ deleteButtonText }}</b-button>
@@ -95,14 +95,11 @@
 
         <div v-show="photoRemoved">
           <a>Your photo has been removed from this entry.</a>
-          <b-form-file id="file_input1" v-model="newImage" accept="image/*"></b-form-file>
+          <b-form-file id="file_input2" v-model="newImage" accept="image/*"></b-form-file>
         </div>
 
         <div v-show="!photoRemoved">
           <b-form-group>
-            <!-- <div v-if="newImage">
-              <a>File chosen: <b>{{ newImage && newImage.name }}</b></a>
-            </div> -->
             <div>
               <a v-show="newImage && !imageSrc">File chosen: <b>{{ newImage && newImage.name }}</b> </a>
               <a v-show="!newImage  && !imageSrc"><b>{{ photoSectionText }}</b></a>
@@ -110,7 +107,7 @@
               <b-form-file v-show="!newImage && !imageSrc" id="file_input1" v-model="newImage" accept="image/*"></b-form-file>
               <br><br>
             </div>
-            <b-button @click="clearFile" v-show="!imageSrc && newImage" class="lighted" variant="danger">Clear</b-button>
+            <b-button @click="clearFile" v-show="!imageSrc && newImage && !putSuccessful" class="lighted" variant="danger">Clear</b-button>
           </b-form-group>
         </div>
       </div>
@@ -223,10 +220,16 @@ export default {
     putEntry() {
       event.preventDefault()
       var self = this;
+
+      console.log('Starting putEntry')
+      console.log('self.photo_id: ', self.photo_id)
+      console.log('self.newImage: ', self.newImage)
+
       auto({
           putImage: function(callback) {
+            console.log('in putImage')
             if (!self.newImage) {
-              return
+              console.log('no self.newImage. Skipping putImage.')
             }
             if (!self.photo_id) {
               request
@@ -268,7 +271,7 @@ export default {
             })
           },
           createPutObj: ['putImage', function(results, callback) {
-            console.log('results:', results)
+            console.log('in createPutObj')
             var entry = {
               'title': self.fieldData.title,
               'user': localStorage.user_id,
@@ -304,7 +307,8 @@ export default {
             console.log('entry:', _entry)
             callback(null, _entry)
           }],
-          postText: ['createPutObj', 'putImage', function(results, callback) {
+          putText: ['createPutObj', 'putImage', function(results, callback) {
+            console.log('in putText')
             request
               .put('http://127.0.0.1:3000/api/entries/' + localStorage.put_id)
               .send(results.createPutObj)
@@ -327,88 +331,85 @@ export default {
           console.log('results = ', results)
         })
     },
-    putText() {
-      // NOTE BIND DATA FROM CURRENTENTRY GET REQ TO V-MODEL DATA
-      event.preventDefault()
-      var self = this
-      var entry = {
-        'title': self.fieldData.title,
-        'user': localStorage.user_id,
-        'results': {
-          'flavor': self.fieldData.results.flavor,
-          'texture': self.fieldData.results.texture,
-          'appearance': self.fieldData.results.appearance,
-          'overall': self.fieldData.results.overall
-        },
-        'cook': {
-          'smokerModel': self.fieldData.cook.smokerModel,
-          'temp': self.fieldData.cook.temp,
-          'woodType': self.fieldData.cook.woodType,
-          'electricHeatingElement': self.fieldData.cook.electricHeatingElement,
-          'pellets': self.fieldData.cook.pellets,
-          'charcoal': self.fieldData.cook.charcoal,
-          'cookTime': {
-            'hours': self.fieldData.cook.cookTime.hours,
-            'mins': self.fieldData.cook.cookTime.mins
-          }
-        },
-        'ingredients': {
-          'meat': self.fieldData.ingredients.meat,
-          'marinade': self.fieldData.ingredients.marinade,
-          'injection': self.fieldData.ingredients.injection,
-          'slather': self.fieldData.ingredients.slather,
-          'rub': self.fieldData.ingredients.rub,
-          'sauce': self.fieldData.ingredients.sauce
-        }
-      }
-      console.log('newImage: ', self.newImage)
-
-      if (self.photo_id && self.newImage) {
-        self.putImage(self.newImage)
-      } else if (!self.photo_id && self.newImage) {
-        self.postImage(self.newImage)
-      } else {
-        self.$set(self, 'putSuccessful', true)
-        return
-      }
-
-      // NOTE UPDATE DB ENTRY VIA PUT REQUEST
-      console.log('entry: ', entry)
-      request
-        .put('http://127.0.0.1:3000/api/entries/' + localStorage.put_id)
-        .send(entry)
-        .set('Accept', 'application/json')
-        .end((err, res) => {
-          if (res.status != '200') {
-            return (err)
-          }
-          console.log('TEXT: PUT SUCCESS - ', res)
-        })
-    },
-    postImage(image) {
-      var self = this;
-      request
-        .post('http://localhost:3000/api/image/')
-        .attach('file', self.newImage)
-        .field('user', localStorage.user_id)
-        .end((err, res) => {
-          if (err) {
-            console.error('IMAGE: POST FAIL - ', err)
-            return err
-          }
-          if (res.status == '201') {
-            console.log('IMAGE: POST SUCCESS - ', res)
-            self.$set(self, 'photoAdded', true)
-            self.$set(self, 'sendBack', true)
-            self.$set(self, 'photo_id', res.body._id)
-            self.$set(self, 'imageSrc', res.body.vuePath)
-            self.$set(self, 'putSuccessful', true)
-          }
-        })
-    },
-    redirectList() {
-      router.push('/list')
-    },
+    // putText() {
+    //   // NOTE BIND DATA FROM CURRENTENTRY GET REQ TO V-MODEL DATA
+    //   event.preventDefault()
+    //   var self = this
+    //   var entry = {
+    //     'title': self.fieldData.title,
+    //     'user': localStorage.user_id,
+    //     'results': {
+    //       'flavor': self.fieldData.results.flavor,
+    //       'texture': self.fieldData.results.texture,
+    //       'appearance': self.fieldData.results.appearance,
+    //       'overall': self.fieldData.results.overall
+    //     },
+    //     'cook': {
+    //       'smokerModel': self.fieldData.cook.smokerModel,
+    //       'temp': self.fieldData.cook.temp,
+    //       'woodType': self.fieldData.cook.woodType,
+    //       'electricHeatingElement': self.fieldData.cook.electricHeatingElement,
+    //       'pellets': self.fieldData.cook.pellets,
+    //       'charcoal': self.fieldData.cook.charcoal,
+    //       'cookTime': {
+    //         'hours': self.fieldData.cook.cookTime.hours,
+    //         'mins': self.fieldData.cook.cookTime.mins
+    //       }
+    //     },
+    //     'ingredients': {
+    //       'meat': self.fieldData.ingredients.meat,
+    //       'marinade': self.fieldData.ingredients.marinade,
+    //       'injection': self.fieldData.ingredients.injection,
+    //       'slather': self.fieldData.ingredients.slather,
+    //       'rub': self.fieldData.ingredients.rub,
+    //       'sauce': self.fieldData.ingredients.sauce
+    //     }
+    //   }
+    //   console.log('newImage: ', self.newImage)
+    //
+    //   if (self.photo_id && self.newImage) {
+    //     self.putImage(self.newImage)
+    //   } else if (!self.photo_id && self.newImage) {
+    //     self.postImage(self.newImage)
+    //   } else {
+    //     self.$set(self, 'putSuccessful', true)
+    //     return
+    //   }
+    //
+    //   // NOTE UPDATE DB ENTRY VIA PUT REQUEST
+    //   console.log('entry: ', entry)
+    //   request
+    //     .put('http://127.0.0.1:3000/api/entries/' + localStorage.put_id)
+    //     .send(entry)
+    //     .set('Accept', 'application/json')
+    //     .end((err, res) => {
+    //       if (res.status != '200') {
+    //         return (err)
+    //       }
+    //       console.log('TEXT: PUT SUCCESS - ', res)
+    //     })
+    // },
+    // postImage(image) {
+    //   var self = this;
+    //   request
+    //     .post('http://localhost:3000/api/image/')
+    //     .attach('file', self.newImage)
+    //     .field('user', localStorage.user_id)
+    //     .end((err, res) => {
+    //       if (err) {
+    //         console.error('IMAGE: POST FAIL - ', err)
+    //         return err
+    //       }
+    //       if (res.status == '201') {
+    //         console.log('IMAGE: POST SUCCESS - ', res)
+    //         self.$set(self, 'photoAdded', true)
+    //         self.$set(self, 'sendBack', true)
+    //         self.$set(self, 'photo_id', res.body._id)
+    //         self.$set(self, 'imageSrc', res.body.vuePath)
+    //         self.$set(self, 'putSuccessful', true)
+    //       }
+    //     })
+    // },
     deletePhoto() {
       var self = this
       if (self.deleteButtonCounter >= 2) {
@@ -428,9 +429,10 @@ export default {
               console.error('IMAGE: DELETE FAIL - ', err)
               return err
             }
-            self.deleteButtonText = "Your photo has been deleted"
             self.$set(self, 'imageSrc', '')
             self.$set(self, 'photoRemoved', true)
+            self.$delete(self, 'newImage')
+
           })
       }
     },
@@ -453,6 +455,7 @@ export default {
                   return err
                 }
                 self.$set(self, 'photoRemoved', true)
+                self.$set('newImage', '');
               })
             callback(null, true)
           },
@@ -477,30 +480,33 @@ export default {
         })
       }
     },
-    putImage(image) {
-      var self = this;
-      console.log('self.photo_id:', self.photo_id)
-      request
-        .put('http://localhost:3000/api/image?id=' + self.photo_id)
-        .attach('file', image)
-        .field('user_id', localStorage.user_id)
-        .end((err, res) => {
-          if (err) {
-            console.error('IMAGE: FAIL - ', err)
-            return err
-          }
-          if (res.status == '200') {
-            self.photo_id = res.body._id
-            self.imageSrc = res.body.vuePath
-            self.$set(self, 'putSuccessful', true)
-            console.log('IMAGE: SUCCESS - ', res)
-          }
-        })
-    },
+    // putImage(image) {
+    //   var self = this;
+    //   console.log('self.photo_id:', self.photo_id)
+    //   request
+    //     .put('http://localhost:3000/api/image?id=' + self.photo_id)
+    //     .attach('file', image)
+    //     .field('user_id', localStorage.user_id)
+    //     .end((err, res) => {
+    //       if (err) {
+    //         console.error('IMAGE: FAIL - ', err)
+    //         return err
+    //       }
+    //       if (res.status == '200') {
+    //         self.photo_id = res.body._id
+    //         self.imageSrc = res.body.vuePath
+    //         self.$set(self, 'putSuccessful', true)
+    //         console.log('IMAGE: SUCCESS - ', res)
+    //       }
+    //     })
+    // },
     clearFile() {
       var self = this
       self.newImage = ''
-    }
+    },
+    redirectList() {
+      router.push('/list')
+    },
   }
 }
 </script>

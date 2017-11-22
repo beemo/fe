@@ -1,11 +1,13 @@
 <template>
 <div id="home">
-  <div v-if="localStorage.logged_out">
+  <div v-cloak v-show="logged_out">
     <br>
-    <h3>You have been logged out successfully.</h3>
+    <h4>You have been logged out successfully.</h4>
   </div>
+  <hr>
   <h3>Most Popular Meats</h3>
-  <CommitChart class="fortypercent">  <h4>Most Popular Meats</h4></CommitChart>
+  <CommitChart class="fortypercent">
+    <h4>Most Popular Meats</h4></CommitChart>
   <br>
 </div>
 </template>
@@ -14,24 +16,25 @@
 import axios from 'axios'
 import moment from 'moment'
 import CommitChart from '../components/CommitChart'
-import router from '../router'
 
 export default {
   name: 'home',
-  components: { CommitChart },
+  components: {
+    CommitChart
+  },
   data() {
     return {
       title: 'Welcome to BBQ Journal',
-      entries: [],
-      singleEntry: '',
-      pleaseLogin: false
+      logged_out: false
     }
   },
-  computed: {
-    authorized() {
-      return localStorage.user_id || localStorage.id_token
-    }
+  created: function() {
+    var self = this
+    self.logged_out = localStorage.logged_out
   },
+  beforeDestroy: function() {
+    localStorage.removeItem("logged_out");
+  }
   //     functionToFind(arr, key, valuetosearch) {
   //       var self = this
   //

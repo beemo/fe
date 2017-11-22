@@ -1,6 +1,6 @@
 <template>
 <div id="app">
-  <div v-if="deleteOK">
+  <div v-cloak v-if="deleteOK">
     <br>
     <h3>Your previous entry was successfully deleted.</h3>
   </div>
