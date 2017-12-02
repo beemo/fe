@@ -186,6 +186,7 @@ export default {
         postText: ['createEntryObj', 'postImage', function(results, callback) {
           request
             .post('http://' + window.location.hostname + ':3000/api/entries')
+            .field('user', localStorage.user_id)
             .send(results.createEntryObj)
             .set('Accept', 'application/json')
             .end((err, res) => {
