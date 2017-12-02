@@ -60,7 +60,7 @@ export default {
       };
       console.log('entry: ', entry)
       request
-        .post('http://127.0.0.1:3000/api/signup')
+        .post('http://' + window.location.hostname + ':3000/api/signup')
         .send(entry)
         .end((entry, err, res) => {
           localStorage.setItem('id_token', res.body.token)
@@ -81,7 +81,7 @@ export default {
   }
   // axios({
   //     method: 'post',
-  //     url: 'http://127.0.0.1:3000/api/entries/',
+  //     url: 'http://' + window.location.hostname + ':3000/api/entries/',
   //     headers: {
   //       'cache-control': 'no-cache',
   //       'postman-token': '192bb095-0757-4c2d-9656-94b0845fb3ec',

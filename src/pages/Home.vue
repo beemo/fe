@@ -50,7 +50,7 @@ export default {
   //     getMoreAndIndex(id, index) {
   //       console.log('index', index)
   //       var self = this
-  //       axios.get('http://127.0.0.1:3000/api/entries/' + id)
+  //       axios.get('http://' + window.location.hostname + ':3000/api/entries/' + id)
   //         .then(function(response) {
   //           console.log(response)
   //           self.singleEntry = response.data

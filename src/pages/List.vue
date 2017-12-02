@@ -112,7 +112,7 @@ export default {
     getEntries() {
       var self = this
       console.log(localStorage.user_id)
-      axios.get('http://127.0.0.1:3000/api/entries?user=' + localStorage.user_id)
+      axios.get('http://' + window.location.hostname + ':3000/api/entries?user=' + localStorage.user_id)
         .then(function(response) {
           console.log(response.data)
           return response.data.entriesSchema
@@ -136,7 +136,7 @@ export default {
       }
       var arr = []
       console.log(localStorage.user_id)
-      axios.get('http://127.0.0.1:3000/api/entries?user=' + localStorage.user_id)
+      axios.get('http://' + window.location.hostname + ':3000/api/entries?user=' + localStorage.user_id)
         .then(function(response) {
           var validEntryArray = response.data.entriesSchema
           console.log('v:', validEntryArray)
@@ -169,7 +169,7 @@ export default {
       self.imageSrc = ''
       localStorage.removeItem("deleteOK");
       self.deleteOK = false;
-      axios.get('http://127.0.0.1:3000/api/entries/' + id)
+      axios.get('http://' + window.location.hostname + ':3000/api/entries/' + id)
         .then(function(response) {
           console.log(response)
           self.singleEntry = response.data
@@ -187,7 +187,7 @@ export default {
     // populatePut(entry) {
     //   var self = this
     //   var id = entry
-    //   axios.get('http://127.0.0.1:3000/api/entries/' + id)
+    //   axios.get('http://' + window.location.hostname + ':3000/api/entries/' + id)
     //     .then(function(response) {
     //       self.singleEntry = response.data
     //       self.cookDate = moment(response.data.created).format('l')

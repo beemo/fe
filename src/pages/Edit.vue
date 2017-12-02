@@ -200,7 +200,7 @@ export default {
     populateForm() {
       // NOTE POPULATE FORM FROM LOCALSTORAGE.PUT_ID
       var self = this
-      axios.get('http://127.0.0.1:3000/api/entries/' + localStorage.put_id)
+      axios.get('http://' + window.location.hostname + ':3000/api/entries/' + localStorage.put_id)
         .then(function(response) {
           console.log(response.data)
           return response.data
@@ -233,7 +233,7 @@ export default {
             }
             if (!self.photo_id) {
               request
-                .post('http://localhost:3000/api/image')
+                .post('http://' + window.location.hostname + ':3000/api/image')
                 .attach('file', self.newImage)
                 .field('user', localStorage.user_id)
                 .end((err, res) => {
@@ -250,7 +250,7 @@ export default {
                 })
             } else if (self.newImage) {
               request
-                .put('http://localhost:3000/api/image/' + self.photo_id)
+                .put('http://' + window.location.hostname + ':3000/api/image/' + self.photo_id)
                 .attach('file', self.newImage)
                 .field('user', localStorage.user_id)
                 .end((err, res) => {
@@ -310,7 +310,7 @@ export default {
           putText: ['createPutObj', 'putImage', function(results, callback) {
             console.log('in putText')
             request
-              .put('http://127.0.0.1:3000/api/entries/' + localStorage.put_id)
+              .put('http://' + window.location.hostname + ':3000/api/entries/' + localStorage.put_id)
               .send(results.createPutObj)
               .set('Accept', 'application/json')
               .end((err, res) => {
@@ -379,7 +379,7 @@ export default {
     //   // NOTE UPDATE DB ENTRY VIA PUT REQUEST
     //   console.log('entry: ', entry)
     //   request
-    //     .put('http://127.0.0.1:3000/api/entries/' + localStorage.put_id)
+    //     .put('http://' + window.location.hostname + ':3000/api/entries/' + localStorage.put_id)
     //     .send(entry)
     //     .set('Accept', 'application/json')
     //     .end((err, res) => {
@@ -392,7 +392,7 @@ export default {
     // postImage(image) {
     //   var self = this;
     //   request
-    //     .post('http://localhost:3000/api/image/')
+    //     .post('http://' + window.location.hostname + ':3000/api/image/')
     //     .attach('file', self.newImage)
     //     .field('user', localStorage.user_id)
     //     .end((err, res) => {
@@ -422,7 +422,7 @@ export default {
       }
       if (self.deleteButtonCounter == 2) {
         request
-          .delete('http://localhost:3000/api/image/' + self.photo_id)
+          .delete('http://' + window.location.hostname + ':3000/api/image/' + self.photo_id)
           .field('user', localStorage.user_id)
           .end((err, res) => {
             if (err) {
@@ -447,7 +447,7 @@ export default {
         auto({
           deleteImage: function(callback) {
             request
-              .delete('http://localhost:3000/api/image/' + self.photo_id)
+              .delete('http://' + window.location.hostname + ':3000/api/image/' + self.photo_id)
               .field('user', localStorage.user_id)
               .end((err, res) => {
                 if (err) {
@@ -461,7 +461,7 @@ export default {
           },
           deleteText: function(callback) {
             request
-              .delete('http://localhost:3000/api/entries/' + localStorage.put_id)
+              .delete('http://' + window.location.hostname + ':3000/api/entries/' + localStorage.put_id)
               .field('user', localStorage.user_id)
               .end((err, res) => {
                 if (err) {
@@ -484,7 +484,7 @@ export default {
     //   var self = this;
     //   console.log('self.photo_id:', self.photo_id)
     //   request
-    //     .put('http://localhost:3000/api/image?id=' + self.photo_id)
+    //     .put('http://' + window.location.hostname + ':3000/api/image?id=' + self.photo_id)
     //     .attach('file', image)
     //     .field('user_id', localStorage.user_id)
     //     .end((err, res) => {

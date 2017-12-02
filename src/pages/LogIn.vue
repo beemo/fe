@@ -64,7 +64,7 @@ export default {
       };
 
       request
-        .post('http://127.0.0.1:3000/api/login')
+        .post('http://' + window.location.hostname + ':3000/api/login')
         .send(entry)
         .set('Accept', 'application/json')
         .end(function(err, res){
@@ -94,7 +94,7 @@ export default {
   }
   // axios({
   //     method: 'post',
-  //     url: 'http://127.0.0.1:3000/api/entries/',
+  //     url: 'http://' + window.location.hostname + ':3000/api/entries/',
   //     headers: {
   //       'cache-control': 'no-cache',
   //       'postman-token': '192bb095-0757-4c2d-9656-94b0845fb3ec',

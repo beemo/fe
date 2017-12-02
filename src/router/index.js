@@ -7,7 +7,6 @@ import Login from '@/pages/LogIn'
 import Logout from '@/pages/LogOut'
 import SignUp from '@/pages/SignUp'
 import Edit from '@/pages/Edit'
-import CreateFake from '@/pages/CreateFake'
 
 Vue.use(Router)
 
@@ -48,11 +47,6 @@ export default new Router({
       path: '/edit',
       name: 'Edit',
       component: Edit
-    },
-    {
-      path: '/fake',
-      name: 'CreateFake',
-      component: CreateFake
     }
   ]
 })

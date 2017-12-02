@@ -125,7 +125,7 @@ export default {
         postImage: function(callback) {
           if (self.uploadImage) {
             request
-              .post('http://localhost:3000/api/image')
+              .post('http://' + window.location.hostname + ':3000/api/image')
               .attach('file', self.uploadImage)
               .field('user', localStorage.user_id)
               .end((err, res) => {
@@ -185,7 +185,7 @@ export default {
         }],
         postText: ['createEntryObj', 'postImage', function(results, callback) {
           request
-            .post('http://127.0.0.1:3000/api/entries')
+            .post('http://' + window.location.hostname + ':3000/api/entries')
             .send(results.createEntryObj)
             .set('Accept', 'application/json')
             .end((err, res) => {
