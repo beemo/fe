@@ -124,11 +124,13 @@ export default {
       auto({
         postImage: function(callback) {
           if (self.uploadImage) {
+            console.log('before api postImage')
             request
               .post('http://' + window.location.hostname + ':3000/api/image')
               .attach('file', self.uploadImage)
               .field('user', localStorage.user_id)
               .end((err, res) => {
+                console.log('after api postImage')
                 if (err) {
                   console.error('IMAGE: FAIL - ', err)
                   return err
@@ -184,12 +186,13 @@ export default {
           callback(null, _entry)
         }],
         postText: ['createEntryObj', 'postImage', function(results, callback) {
+          console.log('before api postText')
           request
             .post('http://' + window.location.hostname + ':3000/api/entries')
-            .field('user', localStorage.user_id)
             .send(results.createEntryObj)
             .set('Accept', 'application/json')
             .end((err, res) => {
+              console.log('after api postText')
               if (err) {
                 console.error('ENTRIES: FAIL - ', err)
                 return err
