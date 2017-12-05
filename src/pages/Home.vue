@@ -5,9 +5,51 @@
     <h4>You have been logged out successfully.</h4>
   </div>
   <hr>
-  <h3>Most Popular Meats</h3>
-  <CommitChart class="fortypercent">
-    <h4>Most Popular Meats</h4></CommitChart>
+
+  <h3> Welcome to BBQ Journal </h3>
+  <h4> A place to record your cooks </h4>
+  <hr>
+  <br>
+
+  <b-container class="bv-example-row">
+    <b-row class="text-center">
+      <b-col>
+        <blockquote cite="https://www.brainyquote.com/quotes/quotes/m/maewest398931.html">
+          <h6>"I always say, keep a diary and someday it'll keep you." - Mae West</h6>
+        </blockquote>
+      </b-col>
+    </b-row>
+    <br>
+    <b-row class="text-left">
+      <b-col md="8">
+        <p>The key ingredient to any successful dish is consistency, or more specifically, reproducibility. Ken Forkish, who won a James Beard Award for his book, "Flour, Water, Yeast, Salt: The Fundamentals of Artisan Bread and Pizza" (2012), considers
+          a pencil and paper to be one of the most powerful tools in his kitchen. Similarly, Aaron Franklin of Franklin Barbeque in Austin, TX (a fellow James Beard award winner himself), emphasizes consistency as the secret of his success in his book,
+          "Franklin Barbecue: A Meat-Smoking Manifesto" (2015).</p>
+      </b-col>
+      <b-col md="4">
+        <b-img src="../static/sausage_stock_flickr.jpg" fluid alt="Responsive sausage image" />
+      </b-col>
+    </b-row>
+    <br>
+    <b-row class="text-left">
+      <b-col md="11">
+        <h6>
+          If you want to make great barbeque consistently, you will need to be able to reproduce your results.</p>
+        </h6>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col class="text-center">
+      <h4><a href="/#/signup">Sign up</a></h4>
+    </b-col>
+    </b-row>
+  </b-container>
+
+  <hr>
+
+  <br>
+  <h3>Most Popular Meats This Month</h3>
+  <CommitChart class="fortypercent"></CommitChart>
   <br>
 </div>
 </template>

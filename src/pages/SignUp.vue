@@ -3,7 +3,8 @@
   <br>
   <h1> {{ title }} </h1>
   <h3 class="shadowed"> {{ page }}</h3>
-  <div class="marginauto">
+
+  <div class="fortypercent">
       <b-form @submit="postEntry()">
 
         <b-form-group id="creds" label-for="creds">
@@ -103,6 +104,12 @@ export default {
 </script>
 
 <style scoped>
+/*
+.fortypercent {
+  width: 40%;
+  margin: auto
+}*/
+
 /*#app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

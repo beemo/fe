@@ -36,7 +36,7 @@ export default {
 </script>
 
 <style>
-#app {
+/*#app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -177,5 +177,5 @@ p {
 
 .lighted {
   : 1px 1px 1px orange;
-}
+}*/
 </style>

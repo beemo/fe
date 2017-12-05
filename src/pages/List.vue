@@ -6,12 +6,12 @@
   </div>
   <div v-if="singleEntry">
     <hr>
-    <b-container fluid class="resultsbox">
+    <b-container class="resultsbox">
       <h4 class="bordermargin shadowed-noblur">Cook Date: {{ cookDate }} - {{ singleEntry.title }} <span><b-button class="lighted upten" v-on:click="EditButton(singleEntry._id)" variant="primary">Edit</b-button> </span>
  </h4>
-      <b-row no-gutters>
-        <b-col class="resultcolumn">
-
+      <b-row>
+        <b-col md="4" class="resultcolumn">
+          <h5 class="tabletitle">Ingredients</h5>
           <div v-if="singleEntry.ingredients.meat" class="result-field"><b>Meat: </b>{{ singleEntry.ingredients.meat }}</div>
           <div v-if="singleEntry.ingredients.marinade" class="result-field"><b>Marinade: </b>{{ singleEntry.ingredients.marinade }}</div>
           <div v-if="singleEntry.ingredients.injection" class="result-field"><b>Injection: </b>{{ singleEntry.ingredients.injection }}</div>
@@ -21,7 +21,8 @@
 
         </b-col>
 
-        <b-col class="resultcolumn">
+        <b-col md="4" class="resultcolumn">
+          <h5 class="tabletitle">The Cook</h5>
 
           <div v-if="singleEntry.cook.smokerModel" class="result-field"><b>Smoker Model: </b>{{ singleEntry.cook.smokerModel }}</div>
           <div v-if="singleEntry.cook.temp" class="result-field"><b>Tempurature: </b>{{ singleEntry.cook.temp }}</div>
@@ -33,7 +34,8 @@
 
         </b-col>
 
-        <b-col class="resultcolumn">
+        <b-col md="4" class="resultcolumn">
+          <h5 class="tabletitle">Results</h5>
 
           <div v-if="singleEntry.results.appearance" class="result-field"><b>Appearance Results: </b>{{ singleEntry.results.appearance }}</div>
           <div v-if="singleEntry.results.texture" class="result-field"><b>Texture Results: </b>{{ singleEntry.results.texture }}</div>
@@ -42,22 +44,30 @@
 
         </b-col>
       </b-row>
+      <div v-show="imageSrc" class="container">
+        <img :src="imageSrc" class="image">
+      </div>
     </b-container>
-
-    <div v-show="imageSrc" class="container">
-      <img :src="imageSrc" class="image">
-    </div>
-
   </div>
-  <div class="seventypercent box-entry" v-show="authorized && hasEntries">
-    <h4 class="entriesoffset bordermargin shadowed-noblur">Entries List</h4>
-    <b-table class="table-class" small hover :items="items" :fields="['title', 'rating', 'date']" @row-clicked="getMore" @row-dblclicked="EditEntry"></b-table>
-    <br>
-  </div>
-  <div v-show="!hasEntries" class="seventypercent box-entry">
-    <h4 class="entriesoffset bordermargin shadowed-noblur">You have no entries yet.</h4>
-    <b-button @click="redirectCreate()" class="lighted" type="submit" variant="success">Make one.</b-button><br><br>
-  </div>
+  <b-container v-show="authorized && hasEntries">
+    <b-row class="text-center">
+      <b-col>
+        <h4 class="tabletitle">Entries List</h4>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col md="11" class="ml-md-auto p-11">
+          <b-table hover :items=" items " :fields="[ 'title', 'rating', 'date'] " @row-clicked="getMore " @row-dblclicked="EditEntry ">
+          </b-table>
+      </b-col>
+    </b-row>
+  </b-container>
+  <b-container v-if="!hasEntries" class="seventypercent box-entry ">
+    <b-row>
+      <h4 class="entriesoffset bordermargin shadowed-noblur ">You have no entries yet.</h4>
+      <b-button @click="redirectCreate() " class="lighted " type="submit " variant="success ">Make one.</b-button><br><br>
+    </b-row>
+  </b-container>
 </div>
 </template>
 
