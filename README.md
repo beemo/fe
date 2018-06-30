@@ -1,6 +1,9 @@
 # BBQ Journal
 
-This repo only contains frontend files for BBQ-journal.com. If you want to see the (completely separate) [backend](https://github.com/benskyio/bbqjournal-backend), click here.
+This repo only contains frontend files for BBQ-journal.com. Here is the repo containing the (completely separate) [backend](https://github.com/benskyio/bbqjournal-backend).
+
+Built with VueJS with more "v-show" and "v-if" directives than you can shake a stick at.
+
 
 ## Build Setup
 
