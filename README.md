@@ -3,11 +3,11 @@
 
 This repo only contains frontend files for BBQ-journal.com. Here is the repo containing the (completely separate) [backend](https://github.com/benskyio/bbqjournal-backend).
 <div align="center">
-<div border="5px solid black">
+<div style="border: 5px solid black">
 <img src="https://i.imgur.com/e244FnP.jpg" alt="screenshot #1 of bbq-journal.com" width="60%" >
  </div>
 <br><br>
-<div border="5px solid black">
+<div style="border: 5px solid black">
 <img src="https://i.imgur.com/dkD22H2.jpg" alt="screenshot #2 of bbq-journal.com" width="60%" >
 </div>
 </div>
