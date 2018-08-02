@@ -4,7 +4,7 @@
 Note: This repo only contains frontend files for BBQ-journal.com. Here is the repo containing the (completely separate) [backend](https://github.com/benskyio/bbqjournal-backend).
  
 
-I created BBQ-Journal.com as a place to record my BBQ recipes. Built with VueJS. The site uses JWT for API auth and provides a secure place for temperatures, ingredients, cook times and upload photos of your bbq dishes.
+A place to record your BBQ recipes. Built with VueJS. The site uses JWT for API auth to provides a secure place for temperatures, ingredients, cook times. You can also upload photos of your bbq dishes. 
 <br><br>
 Also built with BootstrapJS, ChartJS and more "v-show" and "v-if" directives than you can shake a stick at.
 
